@@ -51,8 +51,8 @@ export type CardanoTestWalletConfig = {
   enableStakeSigning?: boolean;
   extraRegisteredPubStakeKeys?: string[];
   extraRewardAddresses?: string[];
-  kuberApiUrl: string;
-  kuberApiKey: string;
+  kuberApiUrl?: string;
+  kuberApiKey?: string;
 };
 
 export type KuberValue = {

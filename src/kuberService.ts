@@ -1,4 +1,3 @@
-import { error } from "console";
 import { KuberValue } from "./types";
 import fetch, { BodyInit, RequestInit } from "node-fetch";
 
@@ -8,39 +7,28 @@ type KuberBalanceResponse = {
   value: KuberValue;
 };
 
+interface CIPError {
+  code: number;
+  info: string;
+}
 const config = {
-  apiUrl: window["cardanoTestWallet"]["kuberApiUrl"],
-  apiKey: window["cardanoTestWallet"]["kuberApiKey"],
+  apiUrl: window["cardanoTestWallet"]["config"]["kuberApiUrl"],
+  apiKey: window["cardanoTestWallet"]["config"]["kuberApiKey"],
 };
 
 const kuberService = {
   submitTransaction(tx: any) {
-    return fetch(config.apiUrl + "/api/v1/tx/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": config.apiKey,
-      },
-
-      body: JSON.stringify({
+    return callKuber(
+      "/api/v1/tx/submit",
+      "POST",
+      JSON.stringify({
         tx: {
           description: "",
           type: "Tx ConwayEra",
           cborHex: tx,
         },
-      }),
-      redirect: "follow",
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json;
-        } else {
-          throw new Error("Failed to submit tx: " + res.statusText);
-        }
       })
-      .catch((error) => {
-        throw new Error("Network error: " + error.message);
-      });
+    );
   },
 
   queryUtxos(address: string): Promise<[KuberBalanceResponse]> {
@@ -55,6 +43,14 @@ async function callKuber(
   body?: BodyInit,
   contentType = "application/json"
 ) {
+  if (!config.apiUrl) {
+    throw Error("Kuber Api Url is missing.");
+  }
+
+  if (!config.apiKey) {
+    throw Error("Kuber Api key is missing.");
+  }
+
   const url = config.apiUrl + path;
 
   const headers: Record<string, string> = {
@@ -83,16 +79,23 @@ async function callKuber(
         try {
           json = JSON.parse(txt);
           if (json) {
-            err = Error(
-              `KuberApi [Status ${res.status}] : ${
+            err = {
+              code: -1,
+              info: `KuberApi [Status ${res.status}] : ${
                 json.message ? json.message : txt
-              }`
-            );
+              }`,
+            } as CIPError;
           } else {
-            err = Error(`KuberApi [Status ${res.status}] : ${txt}`);
+            err = {
+              code: -1,
+              info: `KuberApi [Status ${res.status}] : ${txt}`,
+            };
           }
         } catch (e) {
-          err = Error(`KuberApi [Status ${res.status}] : ${txt}`);
+          err = {
+            code: -1,
+            info: `KuberApi [Status ${res.status}] : ${txt}`,
+          };
         }
         err.status = res.status;
         throw err;

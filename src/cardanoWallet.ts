@@ -2,7 +2,6 @@ import * as blake from "blakejs";
 import {
   CIP30Provider,
   Cip95Instance,
-  CardanoTestWallet,
   CardanoTestWalletConfig,
   KuberValue,
 } from "./types";

@@ -1,5 +1,4 @@
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
 
 const dotenv = require("dotenv");
 const path = require("path");
@@ -17,7 +16,7 @@ const licenseText = `
 `;
 
 module.exports = {
-  entry: "./index.ts",
+  entry: "src/index.ts",
   module: {
     rules: [
       {
@@ -45,21 +44,12 @@ module.exports = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: "*.d.ts",
-          to: path.resolve(__dirname, "dist/cardano-test-wallet/"),
-          context: "dist/types",
-        },
-      ],
-    }),
     new webpack.BannerPlugin({
       banner: licenseText,
     }),
   ],
   output: {
     filename: "index.js",
-    path: path.resolve(__dirname, "dist/cardano-test-wallet"),
+    path: path.resolve(__dirname, "dist"),
   },
 };

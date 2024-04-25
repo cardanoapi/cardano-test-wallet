@@ -1,7 +1,10 @@
 {
-  "name": "intersect-govtool",
+  "name": "cardano-test-wallet",
   "version": "1.0.0",
   "license": "MIT",
+  "description": "This JavaScript library injects a simulated Cardano wallet into your web application for testing purposes.",
+  "main": "dist/index.js",
+  "files":["dist"],
   "devDependencies": {
     "@types/node": "^20.11.17",
     "@types/node-fetch": "^2.6.11",
@@ -13,7 +16,7 @@
     "webpack-cli": "^5.1.4"
   },
   "scripts": {
-    "package-wallet": "tsc ./types.ts --outDir dist/types --declaration && npx webpack",
+    "build": "tsc src/types.ts --outDir dist --declaration && npx webpack",
     "test": "npx playwright test"
   },
   "dependencies": {
@@ -30,4 +33,5 @@
     "seedrandom": "^3.0.5",
     "typescript": "^5.4.2"
   }
+ 
 }

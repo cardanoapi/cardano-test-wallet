@@ -15,8 +15,8 @@ This JavaScript library injects a simulated Cardano wallet into your web applica
    - `enableStakeSigning` (optional): Enables stake signing functionality. (Defaults false)
    - `extraRegisteredPubStakeKeys` (optional): Additional public stake keys for the wallet.
    - `extraRewardAddresses` (optional): Additional reward addresses for the wallet.
-   - `kuberApiUrl`: URL for the Kuber API endpoint (node interface).
-   - `kuberApiKey`: API key for the Kuber API (optional).
+   - `kuberApiUrl` (optional): URL for the Kuber API endpoint (node interface).
+   - `kuberApiKey` (optional): API key for the Kuber API (optional).
 
 **Wallet name is required**
 Initialize this before injecting the script.
