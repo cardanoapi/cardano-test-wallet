@@ -48,7 +48,6 @@ export type CardanoTestWallet = {
 
 export type CardanoTestWalletConfig = {
   networkId?: number;
-  walletName: string;
   enableStakeSigning?: boolean;
   extraRegisteredPubStakeKeys?: string[];
   extraRewardAddresses?: string[];

@@ -1,16 +1,13 @@
 // Make cardano wallet extension and make it available in window
 
 import { mkCardanoWalletExtension } from "./cardanoWallet";
-import { CardanoTestWalletConfig } from "./types";
 
 (async () => {
-  const config = window["cardanoTestWallet"][
-    "config"
-  ] as CardanoTestWalletConfig;
+  const walletName = window["cardanoTestWallet"]["walletName"];
 
-  if (config.walletName == null) {
+  if (walletName == null) {
     throw new Error(
-      'Please specify the wallet name in the cardanoTestWallet.config object. Example: { walletName: "MyWallet" }'
+      'Please specify the wallet name in the cardanoTestWallet.walletName object. Example: { walletName: "MyWallet" }'
     );
   }
 
@@ -18,6 +15,6 @@ import { CardanoTestWalletConfig } from "./types";
 
   // @ts-ignore
   window.cardano = {
-    demos: extension,
+    [walletName]: extension,
   };
 })();
