@@ -177,7 +177,7 @@ export async function mkCardanoWalletExtension(): Promise<CIP30Provider> {
       enabled = true;
       const wallet =
         window["cardanoTestWallet"]["wallet"] ||
-        (await ShelleyWallet.generate()).json;
+        (await ShelleyWallet.generate()).json();
 
       let extension = await mkCip95Wallet(
         ShelleyWallet.fromJson(wallet),
