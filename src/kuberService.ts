@@ -1,5 +1,5 @@
-import { KuberValue } from "./types";
 import fetch, { BodyInit, RequestInit } from "node-fetch";
+import { KuberValue } from "./types";
 
 type KuberBalanceResponse = {
   address: string;
@@ -89,13 +89,13 @@ async function callKuber(
             err = {
               code: -1,
               info: `KuberApi [Status ${res.status}] : ${txt}`,
-            };
+            } as CIPError;
           }
         } catch (e) {
           err = {
             code: -1,
             info: `KuberApi [Status ${res.status}] : ${txt}`,
-          };
+          } as CIPError;
         }
         err.status = res.status;
         throw err;
