@@ -1,5 +1,6 @@
 // Make cardano wallet extension and make it available in window
 
+
 import { mkCardanoWalletExtension } from "./cardanoWallet";
 
 (async () => {

@@ -2,45 +2,41 @@
 
 This JavaScript library injects a simulated Cardano wallet into your web application for testing purposes.
 
-**Features:**
+### Features
 
 - Provides optional configuration for the wallet, including network ID, staking options, and Kuber API details.
 - Creates a test Cardano wallet object for interacting with the Cardano testnet.
 
-**Usage:**
+### Usage
 
-1. **Include the Library:** Inject the `cardanoTestWallet` library into your web application.
-2. **Optional Configuration:** Set the desired configuration using `window.cardanoTestWallet.config`.
-   - `networkId` (optional): The network ID for the Cardano testnet you want to use. (Default 0)
-   - `enableStakeSigning` (optional): Enables stake signing functionality. (Defaults false)
-   - `extraRegisteredPubStakeKeys` (optional): Additional public stake keys for the wallet.
-   - `extraRewardAddresses` (optional): Additional reward addresses for the wallet.
-   - `kuberApiUrl` (optional): URL for the Kuber API endpoint (node interface).
-   - `kuberApiKey` (optional): API key for the Kuber API (optional).
+1. **Load Extension:**<br>
+   Use the `loadExtension` function to inject the wallet extension into your web application.
 
-**Wallet name is required**
-Initialize this before injecting the script.
+   ```ts
+   import { loadExtension } from "cardano-test-wallet";
+   loadExtension("myTestWallet");
+   ```
 
-```javascript
-window.cardanoTestWallet.walletName = "MyTestWallet";
-```
+2. **Import Test Wallet:**<br>
+   If you wish to import your own custom wallet, use the `importTestWallet` `function.
 
-If you wish to create your own wallet, include it in window.cardanoTestWallet.wallet with the following structure:
+   ```ts
+   import { importTestWallet } from "cardano-test-wallet";
+   importTestWallet(CustomWallet);
+   ```
 
-```json
-{
-  payment: {
-    private: string;
-    public: string;
-    pkh: string;
-  };
-  stake: {
-    private: string;
-    public: string;
-    pkh: string;
-  }
-}
-```
+3. **Add wallet config:**<br>
+   Set optional configurations for the wallet using the `addTestWalletConfig` function.
+
+   ```ts
+   import { addTestWallet
+   Config } from "cardano-test-wallet";
+
+   addTestConfig({
+     kuberApiUrl: "https://prepod.kuber.cardanoapi.io",
+     kuberApiKey: "your-api-key",
+   });
+   ```
 
 **Networks:**
 
@@ -49,16 +45,20 @@ If you wish to create your own wallet, include it in window.cardanoTestWallet.wa
 
 **Example:**
 
-```javascript
-window.cardanoTestWallet.walletName = "MyTestWallet";
-// Inject the library (replace 'path/to/script.js' with the actual path)
-<script src="path/to/script.js"></script>;
+```ts
+import {
+  loadExtension,
+  addTestWalletConfig,
+  importTestWallet,
+} from "cardano-test-wallet";
+loadExtension("MyTestWallet");
 
-// Configure the wallet
-window.cardanoTestWallet.config = {
+importTestWallet(CustomWallet);
+
+addTestWalletConfig({
   kuberApiUrl: "https://prepod.kuber.cardanoapi.io",
   kuberApiKey: "your-api-key",
-};
+});
 
 // Access the wallet after injection
 const wallet = window.cardano.MyTestWallet;

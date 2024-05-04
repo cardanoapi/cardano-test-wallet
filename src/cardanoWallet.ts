@@ -1,16 +1,15 @@
 import * as blake from "blakejs";
-import {
-  CIP30Provider,
-  Cip95Instance,
-  CardanoTestWalletConfig,
-  KuberValue,
-} from "./types";
-import { addExtension } from "cbor-x";
-import { ShelleyWallet } from "./crypto";
-import kuberService from "./kuberService";
-import { Decoder, Encoder } from "cbor-x";
 import { blake2bHex } from "blakejs";
 import { Buffer } from "buffer";
+import { Decoder, Encoder, addExtension } from "cbor-x";
+import {
+  CIP30Provider,
+  CardanoTestWalletConfig,
+  Cip95Instance,
+  KuberValue,
+} from "../types";
+import { ShelleyWallet } from "./crypto";
+import kuberService from "./kuberService";
 
 const cborxEncoder = new Encoder({
   mapsAsObjects: false,

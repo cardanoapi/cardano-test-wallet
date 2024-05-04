@@ -1,5 +1,5 @@
 import fetch, { BodyInit, RequestInit } from "node-fetch";
-import { KuberValue } from "./types";
+import { KuberValue } from "../types";
 
 type KuberBalanceResponse = {
   address: string;
@@ -11,10 +11,6 @@ interface CIPError {
   code: number;
   info: string;
 }
-const config = {
-  apiUrl: window["cardanoTestWallet"]["config"]["kuberApiUrl"],
-  apiKey: window["cardanoTestWallet"]["config"]["kuberApiKey"],
-};
 
 const kuberService = {
   submitTransaction(tx: any) {
@@ -43,18 +39,22 @@ async function callKuber(
   body?: BodyInit,
   contentType = "application/json"
 ) {
-  if (!config.apiUrl) {
+  // @ts-ignore
+  const apiUrl = window.cardanoTestWallet.config.kuberApiUrl;
+  // @ts-ignore
+  const apiKey = window.cardanoTestWallet.config.kuberApiKey;
+
+  if (!apiUrl) {
     throw Error("Kuber Api Url is missing.");
   }
-
-  if (!config.apiKey) {
+  if (!apiKey) {
     throw Error("Kuber Api key is missing.");
   }
 
-  const url = config.apiUrl + path;
+  const url = apiUrl + path;
 
   const headers: Record<string, string> = {
-    "api-key": config.apiKey,
+    "api-key": apiKey,
   };
   if (contentType) {
     headers["content-type"] = contentType;
