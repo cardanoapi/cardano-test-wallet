@@ -29,10 +29,9 @@ This JavaScript library injects a simulated Cardano wallet into your web applica
    Set optional configurations for the wallet using the `addTestWalletConfig` function.
 
    ```ts
-   import { addTestWallet
-   Config } from "cardano-test-wallet";
+   import { addTestWalletConfig } from "cardano-test-wallet";
 
-   addTestConfig({
+   addTestWalletConfig({
      kuberApiUrl: "https://prepod.kuber.cardanoapi.io",
      kuberApiKey: "your-api-key",
    });
