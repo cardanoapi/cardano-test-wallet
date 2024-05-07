@@ -81,20 +81,20 @@ async function callKuber(
           if (json) {
             err = {
               code: -1,
-              info: `KuberApi [Status ${res.status}] : ${
+              info: `Tx Submission [Status ${res.status}] : ${
                 json.message ? json.message : txt
               }`,
             } as CIPError;
           } else {
             err = {
               code: -1,
-              info: `KuberApi [Status ${res.status}] : ${txt}`,
+              info: `Tx Submission [Status ${res.status}] : ${txt}`,
             } as CIPError;
           }
         } catch (e) {
           err = {
             code: -1,
-            info: `KuberApi [Status ${res.status}] : ${txt}`,
+            info: `Tx Submission [Status ${res.status}] : ${txt}`,
           } as CIPError;
         }
         err.status = res.status;
