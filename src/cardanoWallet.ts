@@ -165,7 +165,10 @@ export async function mkCip95Wallet(
  * @returns {Promise<CIP30Provider>} A promise that resolves with the created CIP-30 provider.
  */
 
-export async function mkCardanoWalletExtension(): Promise<CIP30Provider> {
+export async function mkCardanoWalletExtension(
+  walletName: string,
+  supportedExtensions: Record<string, number>[] = [{ cip: 95 }]
+): Promise<CIP30Provider> {
   let enabled = false;
 
   return {
@@ -189,13 +192,8 @@ export async function mkCardanoWalletExtension(): Promise<CIP30Provider> {
       return enabled;
     },
 
-    name: "Demos",
-
-    supportedExtensions: [
-      {
-        cip: 95,
-      },
-    ],
+    name: walletName,
+    supportedExtensions,
   };
 }
 

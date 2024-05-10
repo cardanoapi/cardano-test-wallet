@@ -53,6 +53,7 @@ export type CardanoTestWalletConfig = {
   extraRewardAddresses?: string[];
   kuberApiUrl?: string;
   kuberApiKey?: string;
+  supportedExtensions?: Record<string, number>[];
 };
 
 export type KuberValue = {

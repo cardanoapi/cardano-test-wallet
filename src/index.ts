@@ -1,10 +1,11 @@
 // Make cardano wallet extension and make it available in window
 
-
+import { CardanoTestWalletConfig } from "../types";
 import { mkCardanoWalletExtension } from "./cardanoWallet";
 
 (async () => {
   const walletName = window["cardanoTestWallet"]["walletName"];
+  const config: CardanoTestWalletConfig = window["cardanoTestWallet"]["config"];
 
   if (walletName == null) {
     throw new Error(
@@ -12,7 +13,10 @@ import { mkCardanoWalletExtension } from "./cardanoWallet";
     );
   }
 
-  const extension = await mkCardanoWalletExtension();
+  const extension = await mkCardanoWalletExtension(
+    walletName,
+    config.supportedExtensions
+  );
 
   // @ts-ignore
   window.cardano = {
