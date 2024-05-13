@@ -205,18 +205,22 @@ const getUtxosKuber = async (
 ) => {
   function kuberValuetoObject(
     value: KuberValue
-  ): [bigint, Map<string, Map<string, bigint>>] | bigint {
+  ): [bigint, Map<Buffer, Map<Buffer, bigint>>] | bigint {
     const lovelace = BigInt(value.lovelace as bigint | number | string);
-    let assets: Map<string, Map<string, bigint>> = new Map();
+    let assets: Map<Buffer, Map<Buffer, bigint>> = new Map();
     for (let policy in value) {
       const assetMap = value[policy] as Record<string, bigint | number>;
+      const policyBuffer = Buffer.from(policy, "hex");
       for (let tokenName in assetMap) {
-        if (assets.has(policy)) {
-          assets.get(policy).set(tokenName, BigInt(assetMap[tokenName]));
+        const tokenNameBuffer = Buffer.from(tokenName, "hex");
+        if (assets.has(policyBuffer)) {
+          assets
+            .get(policyBuffer)
+            .set(tokenNameBuffer, BigInt(assetMap[tokenName]));
         } else {
           let quantityMap = new Map();
-          quantityMap.set(tokenName, BigInt(assetMap[tokenName]));
-          assets.set(policy, quantityMap);
+          quantityMap.set(tokenNameBuffer, BigInt(assetMap[tokenName]));
+          assets.set(policyBuffer, quantityMap);
         }
       }
     }
@@ -229,7 +233,6 @@ const getUtxosKuber = async (
   }
 
   const apiResponse = await kuberService.queryUtxos(walletAddress);
-  let result = [];
   return apiResponse.map((utxo) => {
     const txin = utxo.txin.split("#");
     return Buffer.from(
