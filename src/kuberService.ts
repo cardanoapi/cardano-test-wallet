@@ -47,9 +47,6 @@ async function callKuber(
   if (!apiUrl) {
     throw Error("Kuber Api Url is missing.");
   }
-  if (!apiKey) {
-    throw Error("Kuber Api key is missing.");
-  }
 
   const url = apiUrl + path;
 
