@@ -9,6 +9,11 @@ export interface CIP30Provider {
   supportedExtensions: Record<string, number>[];
 }
 
+interface DataSignature {
+  signature: HexString;
+  key: HexString;
+}
+
 export interface CIP30Instance {
   submitTx: (tx: string) => Promise<string>;
   signTx: (tx: string, partial?: Boolean) => Promise<HexString>;
@@ -19,7 +24,7 @@ export interface CIP30Instance {
   getUsedAddresses: () => Promise<Array<HexString>>;
   getUtxos: (amount?: object, paginate?: any) => Promise<Array<HexString>>;
   getCollateral?: () => Promise<Array<HexString>>;
-  signData: (address: string, payload: HexString) => Promise<HexString>;
+  signData: (address: HexString, payload: HexString) => Promise<DataSignature>;
   getBalance: () => Promise<string>;
 }
 
