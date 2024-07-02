@@ -97,6 +97,13 @@ export class ShelleyWallet {
     return wallet;
   }
 
+  public static async fromSigningKeys(paymentKey: string, stakeKey: string) {
+    return new ShelleyWallet(
+      await Ed25519Key.fromPrivateKeyHex(paymentKey),
+      await Ed25519Key.fromPrivateKeyHex(stakeKey),
+    );
+  }
+
   addressBech32(networkId: number): string {
     const prefix = networkId == 0 ? "addr_test" : "addr";
     return bech32.encode(

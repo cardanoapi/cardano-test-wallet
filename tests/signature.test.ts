@@ -38,11 +38,12 @@ describe("Signature verification", () => {
 
   test("Should verify signData", async () => {
     const wallet = await mkCip95Wallet(await ShelleyWallet.generate(), {});
-    const payloadHex = Buffer.from(payload).toString("hex");
+    const payloadHex = Buffer.from("Hello").toString("hex");
     const changeAddr = await wallet.getChangeAddress();
 
     const signedData = await wallet.signData(changeAddr, payloadHex);
 
+    console.log(signedData);
     const decoded = COSESign1.from_bytes(
       Buffer.from(signedData.signature, "hex"),
     );
