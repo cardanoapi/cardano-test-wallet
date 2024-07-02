@@ -176,21 +176,20 @@ export async function mkCip95Wallet(
         Label.new_text("address"),
         CBORValue.new_bytes(Buffer.from(address, "hex")),
       );
+
       const protectedSerialized = ProtectedHeaderMap.new(protectedHeaders);
       const unprotectedHeaders = HeaderMap.new();
       const headers = Headers.new(protectedSerialized, unprotectedHeaders);
+
       const builder = COSESign1Builder.new(
         headers,
         Buffer.from(payload, "hex"),
         false,
       );
-      const privateKey = PrivateKey.from_normal_bytes(accountKey.private);
-      const toSign = Uint8Array.from(Buffer.from(payload, "hex"));
+      const toSign = builder.make_data_to_sign().to_bytes();
 
-      const signedSigStruc = privateKey.sign(toSign).to_bytes();
+      const signedSigStruc = await accountKey.signRaw(toSign);
       const coseSign1 = builder.build(signedSigStruc);
-
-      privateKey.free();
 
       const key = COSEKey.new(Label.from_key_type(KeyType.OKP));
       key.set_algorithm_id(Label.from_algorithm_id(AlgorithmId.EdDSA));
@@ -202,6 +201,7 @@ export async function mkCip95Wallet(
         Label.new_int(Int.new_negative(BigNum.from_str("2"))),
         CBORValue.new_bytes(accountKey.public),
       ); // x (-2) set to public key
+
       return {
         signature: Buffer.from(coseSign1.to_bytes()).toString("hex"),
         key: Buffer.from(key.to_bytes()).toString("hex"),
