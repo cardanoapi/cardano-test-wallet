@@ -1,30 +1,17 @@
 import * as blake from "blakejs";
 import { blake2bHex } from "blakejs";
 import { Buffer } from "buffer";
-import { Decoder, Encoder, addExtension } from "cbor-x";
+import { addExtension, Decoder, Encoder } from "cbor-x";
 import {
-  CIP30Provider,
   CardanoTestWalletConfig,
+  CIP30Provider,
   Cip95Instance,
   KuberValue,
 } from "../types";
 import { ShelleyWallet } from "./crypto";
 import kuberService from "./kuberService";
-import { Header, PrivateKey } from "@emurgo/cardano-serialization-lib-nodejs";
-import {
-  AlgorithmId,
-  BigNum,
-  CBORValue,
-  COSEKey,
-  COSESign1Builder,
-  COSESignBuilder,
-  HeaderMap,
-  Headers,
-  Int,
-  KeyType,
-  Label,
-  ProtectedHeaderMap,
-} from "@emurgo/cardano-message-signing-nodejs";
+import * as SignatureBuilder from "./signatureBuilder";
+import { KeyType } from "./signatureBuilder";
 
 const cborxEncoder = new Encoder({
   mapsAsObjects: false,
@@ -168,43 +155,36 @@ export async function mkCip95Wallet(
     signData: async (address, payload) => {
       const accountKey = wallet.paymentKey;
 
-      const protectedHeaders = HeaderMap.new();
-      protectedHeaders.set_algorithm_id(
-        Label.from_algorithm_id(AlgorithmId.EdDSA),
+      const protectedHeaders = new SignatureBuilder.HeaderMap();
+      protectedHeaders.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
+      protectedHeaders.setHeader("address", Buffer.from(address, "hex"));
+      const protectedSerialized = protectedHeaders.serialize();
+
+      const unprotectedHeaders = new SignatureBuilder.HeaderMap();
+      unprotectedHeaders.setHeader("hashed", false);
+
+      const headers = new SignatureBuilder.Headers(
+        protectedSerialized,
+        unprotectedHeaders,
       );
-      protectedHeaders.set_header(
-        Label.new_text("address"),
-        CBORValue.new_bytes(Buffer.from(address, "hex")),
-      );
-      const protectedSerialized = ProtectedHeaderMap.new(protectedHeaders);
-      const unprotectedHeaders = HeaderMap.new();
-      const headers = Headers.new(protectedSerialized, unprotectedHeaders);
-      const builder = COSESign1Builder.new(
+
+      const builder = new SignatureBuilder.COSESign1Builder(
         headers,
         Buffer.from(payload, "hex"),
-        false,
       );
-      const privateKey = PrivateKey.from_normal_bytes(accountKey.private);
-      const toSign = Uint8Array.from(Buffer.from(payload, "hex"));
 
-      const signedSigStruc = privateKey.sign(toSign).to_bytes();
+      const toSign = builder.makeDataToSign().toBytes();
+      const signedSigStruc = await accountKey.signRaw(toSign);
       const coseSign1 = builder.build(signedSigStruc);
 
-      privateKey.free();
+      const key = new SignatureBuilder.COSEKey(KeyType.OKP);
+      key.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
+      key.setHeader(-1, 6);
+      key.setHeader(-2, Buffer.from(wallet.paymentKey.public));
 
-      const key = COSEKey.new(Label.from_key_type(KeyType.OKP));
-      key.set_algorithm_id(Label.from_algorithm_id(AlgorithmId.EdDSA));
-      key.set_header(
-        Label.new_int(Int.new_negative(BigNum.from_str("1"))),
-        CBORValue.new_int(Int.new_i32(6)),
-      ); // crv (-1) set to Ed25519 (6)
-      key.set_header(
-        Label.new_int(Int.new_negative(BigNum.from_str("2"))),
-        CBORValue.new_bytes(accountKey.public),
-      ); // x (-2) set to public key
       return {
-        signature: Buffer.from(coseSign1.to_bytes()).toString("hex"),
-        key: Buffer.from(key.to_bytes()).toString("hex"),
+        signature: Buffer.from(coseSign1.toBytes()).toString("hex"),
+        key: Buffer.from(key.toBytes()).toString("hex"),
       };
     },
 
