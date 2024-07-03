@@ -37,7 +37,7 @@ describe("Signature verification", () => {
   });
 
   test("Should verify signData", async () => {
-    const wallet = await mkCip95Wallet(await ShelleyWallet.generate(), {});
+    const wallet = await mkCip95Wallet(await ShelleyWallet.generate());
     const payloadHex = Buffer.from("Hello").toString("hex");
     const changeAddr = await wallet.getChangeAddress();
 
