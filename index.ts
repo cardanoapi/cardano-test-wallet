@@ -1,4 +1,4 @@
-import { CardanoTestWallet, CardanoTestWalletConfig } from "./types";
+import { CardanoTestWalletConfig, CardanoTestWalletJson } from "./types";
 
 export function loadExtension(walletName: string) {
   // @ts-ignore
@@ -9,7 +9,7 @@ export function loadExtension(walletName: string) {
   require("./script.js");
 }
 
-export function importTestWallet(wallet: CardanoTestWallet) {
+export function importTestWallet(wallet: CardanoTestWalletJson) {
   // @ts-ignore
   window.cardanoTestWallet = wallet;
 }

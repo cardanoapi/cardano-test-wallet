@@ -3,6 +3,7 @@ import { blake2bHex } from "blakejs";
 import { Buffer } from "buffer";
 import { addExtension, Decoder, Encoder } from "cbor-x";
 import {
+  CardanoTestWallet,
   CardanoTestWalletConfig,
   CIP30Provider,
   Cip95Instance,
@@ -56,7 +57,7 @@ addExtension({
 
 export async function mkCip95Wallet(
   wallet: ShelleyWallet,
-  config: CardanoTestWalletConfig,
+  config?: CardanoTestWalletConfig,
 ) {
   const networkId = config.networkId ?? 0; // Defaults to testnet
 
@@ -201,8 +202,7 @@ export async function mkCip95Wallet(
  */
 
 export async function mkCardanoWalletExtension(
-  walletName: string,
-  supportedExtensions: Record<string, number>[] = [{ cip: 95 }],
+  cardanoTestWallet: CardanoTestWallet,
 ): Promise<CIP30Provider> {
   let enabled = false;
 
@@ -212,23 +212,21 @@ export async function mkCardanoWalletExtension(
 
     enable: async function () {
       enabled = true;
-      const wallet =
-        window["cardanoTestWallet"]["wallet"] ||
-        (await ShelleyWallet.generate()).json();
+      const walletJson =
+        cardanoTestWallet.wallet || (await ShelleyWallet.generate()).json();
 
-      let extension = await mkCip95Wallet(
-        ShelleyWallet.fromJson(wallet),
-        window["cardanoTestWallet"]["config"],
+      return await mkCip95Wallet(
+        ShelleyWallet.fromJson(walletJson),
+        cardanoTestWallet.config,
       );
-      return extension;
     },
 
     isEnabled: async function () {
       return enabled;
     },
 
-    name: walletName,
-    supportedExtensions,
+    name: cardanoTestWallet.walletName,
+    supportedExtensions: cardanoTestWallet.supportedExtensions || [{ cip: 95 }],
   };
 }
 

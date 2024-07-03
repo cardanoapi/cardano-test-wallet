@@ -38,7 +38,7 @@ export interface Cip95Instance extends CIP30Instance {
   getExtensions: () => Record<string, number>[];
 }
 
-export type CardanoTestWallet = {
+export type CardanoTestWalletJson = {
   payment: {
     private: string;
     public: string;
@@ -51,6 +51,13 @@ export type CardanoTestWallet = {
   };
 };
 
+export type CardanoTestWallet = {
+  walletName: string;
+  supportedExtensions?: Record<string, number>[];
+  wallet?: CardanoTestWalletJson;
+  config?: CardanoTestWalletConfig;
+};
+
 export type CardanoTestWalletConfig = {
   networkId?: number;
   enableStakeSigning?: boolean;
@@ -58,7 +65,6 @@ export type CardanoTestWalletConfig = {
   extraRewardAddresses?: string[];
   kuberApiUrl?: string;
   kuberApiKey?: string;
-  supportedExtensions?: Record<string, number>[];
 };
 
 export type KuberValue = {
