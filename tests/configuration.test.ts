@@ -1,17 +1,17 @@
-import { mkCardanoWalletExtension } from "../src/cardanoWallet";
-import { CardanoTestWallet, CardanoTestWalletConfig } from "../types";
+import { CardanoTestWalletConfig } from "../types";
+import { addTestWalletConfig, loadTestExtension } from "./utils/wallet";
+
+const WALLET_NAME = "test";
 
 describe("Configuration overrides", () => {
   test("Should use default configurations if not provided", async () => {
-    const walletName = "test";
-    const cardanoTestWallet: CardanoTestWallet = { walletName };
-
-    const extension = await mkCardanoWalletExtension(cardanoTestWallet);
+    const extension = await loadTestExtension(WALLET_NAME);
     const walletApi = await extension.enable();
 
     const networkId = await walletApi.getNetworkId();
     expect(networkId).toBe(0);
-    expect(extension.name).toBe(walletName);
+    expect(extension.name).toBe(WALLET_NAME);
+    expect(extension.supportedExtensions).toEqual([{ cip: 95 }]);
   });
 
   test("Should override default configuration", async () => {
@@ -20,11 +20,14 @@ describe("Configuration overrides", () => {
     };
 
     const config: CardanoTestWalletConfig = { networkId: overrides.networkId };
-    const cardanoTestWallet = { walletName: "test", config };
+    const extension = await loadTestExtension(WALLET_NAME, []);
 
-    const extension = await mkCardanoWalletExtension(cardanoTestWallet);
+    // overriding config
+    addTestWalletConfig(config);
+
     const walletApi = await extension.enable();
 
     expect(await walletApi.getNetworkId()).toBe(overrides.networkId);
+    expect(extension.supportedExtensions).toEqual([]);
   });
 });
