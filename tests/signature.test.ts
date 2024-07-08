@@ -25,27 +25,29 @@ describe("Signature verification", () => {
     const payloadHex = Buffer.from(payload).toString("hex");
 
     const signature = await shellyWallet.paymentKey.signRaw(
-      Uint8Array.from(Buffer.from(payloadHex, "hex")),
+      Uint8Array.from(Buffer.from(payloadHex, "hex"))
     );
 
     const isVerified = await shellyWallet.paymentKey.verify(
       payloadHex,
-      Buffer.from(signature).toString("hex"),
+      Buffer.from(signature).toString("hex")
     );
 
     expect(isVerified).toBeTruthy();
   });
 
   test("Should verify signData", async () => {
-    const wallet = await mkCip95Wallet(await ShelleyWallet.generate());
+    const wallet = await mkCip95Wallet(await ShelleyWallet.generate(), {
+      networkId: 1,
+    });
     const payloadHex = Buffer.from("Hello").toString("hex");
     const changeAddr = await wallet.getChangeAddress();
 
     const signedData = await wallet.signData(changeAddr, payloadHex);
 
-    console.log(signedData);
+    // Api logic
     const decoded = COSESign1.from_bytes(
-      Buffer.from(signedData.signature, "hex"),
+      Buffer.from(signedData.signature, "hex")
     );
 
     const key = COSEKey.from_bytes(Buffer.from(signedData.key, "hex"));
