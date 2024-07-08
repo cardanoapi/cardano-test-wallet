@@ -59,7 +59,7 @@ export async function mkCip95Wallet(
   wallet: ShelleyWallet,
   config?: CardanoTestWalletConfig,
 ) {
-  const networkId = config.networkId ?? 0; // Defaults to testnet
+  const networkId = config?.networkId ?? 0; // Defaults to testnet
 
   const walletAddress = wallet.addressBech32(networkId);
   const walletAddressRaw = Buffer.from(wallet.addressRawBytes(networkId));
