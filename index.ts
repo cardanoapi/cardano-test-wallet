@@ -1,12 +1,14 @@
 import { CardanoTestWalletConfig, CardanoTestWalletJson } from "./types";
+import { JSDOM } from "jsdom";
+
+const dom = new JSDOM();
+(global as any).window = dom.window;
 
 export function loadExtension(walletName: string) {
   // @ts-ignore
   window.cardanoTestWallet = {
     walletName: walletName,
   };
-
-  require("./script.js");
 }
 
 export function importTestWallet(wallet: CardanoTestWalletJson) {

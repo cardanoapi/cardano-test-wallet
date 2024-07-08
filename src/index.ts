@@ -4,7 +4,8 @@ import { CardanoTestWallet, CardanoTestWalletConfig } from "../types";
 import { mkCardanoWalletExtension } from "./cardanoWallet";
 
 (async () => {
-  const cardanoTestWallet: CardanoTestWallet | undefined = window["cardanoTestWallet"];
+  const cardanoTestWallet: CardanoTestWallet | undefined =
+    window["cardanoTestWallet"];
   const walletName = cardanoTestWallet?.walletName;
 
   if (!walletName) {
@@ -13,7 +14,10 @@ import { mkCardanoWalletExtension } from "./cardanoWallet";
     );
   }
 
-  const extension = await mkCardanoWalletExtension(cardanoTestWallet);
+  const extension = await mkCardanoWalletExtension(
+    walletName,
+    cardanoTestWallet.supportedExtensions,
+  );
 
   // @ts-ignore
   window.cardano = {

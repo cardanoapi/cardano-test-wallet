@@ -5,6 +5,7 @@ import { addExtension, Decoder, Encoder } from "cbor-x";
 import {
   CardanoTestWallet,
   CardanoTestWalletConfig,
+  CardanoTestWalletJson,
   CIP30Provider,
   Cip95Instance,
   KuberValue,
@@ -202,7 +203,8 @@ export async function mkCip95Wallet(
  */
 
 export async function mkCardanoWalletExtension(
-  cardanoTestWallet: CardanoTestWallet,
+  walletName: string,
+  supportedExtension: Record<string, number>[] = [{ cip: 95 }],
 ): Promise<CIP30Provider> {
   let enabled = false;
 
@@ -212,12 +214,14 @@ export async function mkCardanoWalletExtension(
 
     enable: async function () {
       enabled = true;
+      const cardanoTestWallet: CardanoTestWallet | undefined =
+        window["cardanoTestWallet"];
       const walletJson =
-        cardanoTestWallet.wallet || (await ShelleyWallet.generate()).json();
+        cardanoTestWallet?.wallet || (await ShelleyWallet.generate()).json();
 
       return await mkCip95Wallet(
         ShelleyWallet.fromJson(walletJson),
-        cardanoTestWallet.config,
+        cardanoTestWallet?.config,
       );
     },
 
@@ -225,8 +229,8 @@ export async function mkCardanoWalletExtension(
       return enabled;
     },
 
-    name: cardanoTestWallet.walletName,
-    supportedExtensions: cardanoTestWallet.supportedExtensions || [{ cip: 95 }],
+    name: walletName,
+    supportedExtensions: supportedExtension,
   };
 }
 
