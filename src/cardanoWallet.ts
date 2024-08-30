@@ -58,7 +58,7 @@ addExtension({
 
 export async function mkCip95Wallet(
   wallet: ShelleyWallet,
-  config?: CardanoTestWalletConfig,
+  config?: CardanoTestWalletConfig
 ) {
   const networkId = config?.networkId ?? 0; // Defaults to testnet
 
@@ -67,7 +67,7 @@ export async function mkCip95Wallet(
   const walletAddressHex = walletAddressRaw.toString("hex");
 
   const rewardAddr = Buffer.from(
-    wallet.rewardAddressRawBytes(networkId),
+    wallet.rewardAddressRawBytes(networkId)
   ).toString("hex");
   const stakePublicKey = Buffer.from(wallet.stakeKey.public).toString("hex");
   const walletInstance: Cip95Instance & {
@@ -91,7 +91,7 @@ export async function mkCip95Wallet(
     getChangeAddress: async () => walletAddressHex,
     getRewardAddresses: async () => [
       rewardAddr,
-      ...(config.extraRewardAddresses ?? []),
+      ...(config?.extraRewardAddresses ?? []),
     ],
     getNetworkId: async () => networkId,
     experimental: {
@@ -110,7 +110,7 @@ export async function mkCip95Wallet(
       getUnregisteredPubStakeKeys: async () => [stakePublicKey],
       getRegisteredPubStakeKeys: async () => [
         stakePublicKey,
-        ...(config.extraRegisteredPubStakeKeys ?? []),
+        ...(config?.extraRegisteredPubStakeKeys ?? []),
       ],
     },
     // CIP-95 -----------------------------
@@ -120,7 +120,7 @@ export async function mkCip95Wallet(
       // decode transaction body and calculate hash
       let decodedTx = cborxDecoder.decode(Buffer.from(tx, "hex"));
       const reEncodedTx = Buffer.from(cborxEncoder.encode(decodedTx)).toString(
-        "hex",
+        "hex"
       );
 
       if (tx != reEncodedTx) {
@@ -133,7 +133,7 @@ export async function mkCip95Wallet(
       const txHash = blake.blake2b(txbody, undefined, 32);
       console.debug(
         "[CardanoTestWallet] Signing Tx hash=" +
-          Buffer.from(txHash).toString("hex"),
+          Buffer.from(txHash).toString("hex")
       );
 
       // sign the transaction hash with payment key
@@ -143,7 +143,7 @@ export async function mkCip95Wallet(
       const witness = new Map();
       const vkeyWitnesses = [[wallet.paymentKey.public, paymentKeySig]];
 
-      if (config.enableStakeSigning ?? false) {
+      if (config?.enableStakeSigning ?? false) {
         console.debug("Signing stake key...");
         const stakeKeySig = await wallet.stakeKey.signRaw(txHash);
         vkeyWitnesses.push([wallet.stakeKey.public, stakeKeySig]);
@@ -155,7 +155,7 @@ export async function mkCip95Wallet(
     },
 
     signData: async (address, payload) => {
-      const accountKey = wallet.paymentKey;
+      const accountKey = wallet.stakeKey;
 
       const protectedHeaders = new SignatureBuilder.HeaderMap();
       protectedHeaders.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
@@ -167,12 +167,12 @@ export async function mkCip95Wallet(
 
       const headers = new SignatureBuilder.Headers(
         protectedSerialized,
-        unprotectedHeaders,
+        unprotectedHeaders
       );
 
       const builder = new SignatureBuilder.COSESign1Builder(
         headers,
-        Buffer.from(payload, "hex"),
+        Buffer.from(payload, "hex")
       );
 
       const toSign = builder.makeDataToSign().toBytes();
@@ -182,7 +182,7 @@ export async function mkCip95Wallet(
       const key = new SignatureBuilder.COSEKey(KeyType.OKP);
       key.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
       key.setHeader(-1, 6);
-      key.setHeader(-2, Buffer.from(wallet.paymentKey.public));
+      key.setHeader(-2, Buffer.from(wallet.stakeKey.public));
 
       return {
         signature: Buffer.from(coseSign1.toBytes()).toString("hex"),
@@ -204,7 +204,7 @@ export async function mkCip95Wallet(
 
 export async function mkCardanoWalletExtension(
   walletName: string,
-  supportedExtension: Record<string, number>[] = [{ cip: 95 }],
+  supportedExtension: Record<string, number>[] = [{ cip: 95 }]
 ): Promise<CIP30Provider> {
   let enabled = false;
 
@@ -221,7 +221,7 @@ export async function mkCardanoWalletExtension(
 
       return await mkCip95Wallet(
         ShelleyWallet.fromJson(walletJson),
-        cardanoTestWallet?.config,
+        cardanoTestWallet?.config
       );
     },
 
@@ -238,10 +238,10 @@ const getUtxosKuber = async (
   walletAddress,
   walletAddressRaw,
   amount,
-  paginate,
+  paginate
 ) => {
   function kuberValuetoObject(
-    value: KuberValue,
+    value: KuberValue
   ): [bigint, Map<Buffer, Map<Buffer, bigint>>] | bigint {
     const lovelace = BigInt(value.lovelace as bigint | number | string);
     let assets: Map<Buffer, Map<Buffer, bigint>> = new Map();
@@ -276,7 +276,7 @@ const getUtxosKuber = async (
       cborxEncoder.encode([
         [Buffer.from(txin[0], "hex"), BigInt(txin[1])],
         [walletAddressRaw, kuberValuetoObject(utxo.value)],
-      ]),
+      ])
     ).toString("hex");
   });
 };

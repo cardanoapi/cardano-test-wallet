@@ -24,11 +24,11 @@ describe("Signature verification", () => {
 
     const payloadHex = Buffer.from(payload).toString("hex");
 
-    const signature = await shellyWallet.paymentKey.signRaw(
+    const signature = await shellyWallet.stakeKey.signRaw(
       Uint8Array.from(Buffer.from(payloadHex, "hex"))
     );
 
-    const isVerified = await shellyWallet.paymentKey.verify(
+    const isVerified = await shellyWallet.stakeKey.verify(
       payloadHex,
       Buffer.from(signature).toString("hex")
     );
