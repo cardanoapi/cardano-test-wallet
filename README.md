@@ -34,6 +34,8 @@ This JavaScript library injects a simulated Cardano wallet into your web applica
    addTestWalletConfig({
      kuberApiUrl: "https://prepod.kuber.cardanoapi.io",
      kuberApiKey: "your-api-key",
+     blockfrostApiUrl: "https://cardano-preprod.blockfrost.io/api",
+     blockfrostApiKey: "your-api-key",
    });
    ```
 
