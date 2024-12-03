@@ -57,6 +57,8 @@ importTestWallet(CustomWallet);
 addTestWalletConfig({
   kuberApiUrl: "https://prepod.kuber.cardanoapi.io",
   kuberApiKey: "your-api-key",
+  blockfrostApiUrl: "https://cardano-preprod.blockfrost.io/api",
+  blockfrostApiKey: "your-api-key",
 });
 
 // Access the wallet after injection
@@ -67,6 +69,10 @@ const wallet = window.cardano.MyTestWallet;
 **Kuber API:**
 
 This library utilizes the Kuber API, a node interface similar to Blockfrost, for interacting with the Cardano testnet blockchain. You can generate a Kuber API key [here](https://kuberide.com/kuber/settings/api-keys/).
+
+**Blockfrost API:**
+
+This library utilizes the Blockfrost API to interact with the Cardano testnet blockchain. The Blockfrost API is used to submit transactions, especially since the Kuber API transaction submission takes longer than expected. You can generate a Blockfrost API key [here](https://blockfrost.io/dashboard).
 
 **Security Note:**
 

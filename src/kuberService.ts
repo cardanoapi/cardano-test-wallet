@@ -1,5 +1,6 @@
 import fetch, { BodyInit, RequestInit } from "node-fetch";
 import { KuberValue } from "../types";
+import { blockfrostSubmitTransaction } from "./blockfrostService";
 
 type KuberBalanceResponse = {
   address: string;
@@ -14,17 +15,8 @@ interface CIPError {
 
 const kuberService = {
   submitTransaction(tx: any) {
-    return callKuber(
-      "/api/v1/tx/submit",
-      "POST",
-      JSON.stringify({
-        tx: {
-          description: "",
-          type: "Tx ConwayEra",
-          cborHex: tx,
-        },
-      })
-    );
+    const cborSignedTx = Buffer.from(tx, "hex");
+    return blockfrostSubmitTransaction(cborSignedTx);
   },
 
   queryUtxos(address: string): Promise<[KuberBalanceResponse]> {

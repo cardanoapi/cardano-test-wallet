@@ -65,6 +65,8 @@ export type CardanoTestWalletConfig = {
   extraRewardAddresses?: string[];
   kuberApiUrl?: string;
   kuberApiKey?: string;
+  blockfrostApiKey?: string;
+  blockfrostApiUrl?: string;
 };
 
 export type KuberValue = {
