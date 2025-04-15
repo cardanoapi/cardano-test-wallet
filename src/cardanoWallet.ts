@@ -5,15 +5,13 @@ import { addExtension, Decoder, Encoder } from "cbor-x";
 import {
   CardanoTestWallet,
   CardanoTestWalletConfig,
-  CardanoTestWalletJson,
   CIP30Provider,
   Cip95Instance,
   KuberValue,
 } from "../types";
 import { ShelleyWallet } from "./crypto";
 import kuberService from "./kuberService";
-import * as SignatureBuilder from "./signatureBuilder";
-import { KeyType } from "./signatureBuilder";
+import { signData } from "./utils";
 
 const cborxEncoder = new Encoder({
   mapsAsObjects: false,
@@ -108,6 +106,7 @@ export async function mkCip95Wallet(
     cip95: {
       getPubDRepKey: async () => stakePublicKey,
       getUnregisteredPubStakeKeys: async () => [stakePublicKey],
+      signData: async (address, payload) => signData(wallet, address, payload),
       getRegisteredPubStakeKeys: async () => [
         stakePublicKey,
         ...(config?.extraRegisteredPubStakeKeys ?? []),
@@ -154,41 +153,7 @@ export async function mkCip95Wallet(
       return Buffer.from(cborxEncoder.encode(witness)).toString("hex");
     },
 
-    signData: async (address, payload) => {
-      const accountKey = wallet.stakeKey;
-
-      const protectedHeaders = new SignatureBuilder.HeaderMap();
-      protectedHeaders.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
-      protectedHeaders.setHeader("address", Buffer.from(address, "hex"));
-      const protectedSerialized = protectedHeaders.serialize();
-
-      const unprotectedHeaders = new SignatureBuilder.HeaderMap();
-      unprotectedHeaders.setHeader("hashed", false);
-
-      const headers = new SignatureBuilder.Headers(
-        protectedSerialized,
-        unprotectedHeaders
-      );
-
-      const builder = new SignatureBuilder.COSESign1Builder(
-        headers,
-        Buffer.from(payload, "hex")
-      );
-
-      const toSign = builder.makeDataToSign().toBytes();
-      const signedSigStruc = await accountKey.signRaw(toSign);
-      const coseSign1 = builder.build(signedSigStruc);
-
-      const key = new SignatureBuilder.COSEKey(KeyType.OKP);
-      key.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
-      key.setHeader(-1, 6);
-      key.setHeader(-2, Buffer.from(wallet.stakeKey.public));
-
-      return {
-        signature: Buffer.from(coseSign1.toBytes()).toString("hex"),
-        key: Buffer.from(key.toBytes()).toString("hex"),
-      };
-    },
+    signData: async (address, payload) => signData(wallet, address, payload),
 
     getExtensions: () => [{ cip: 95 }],
   };
