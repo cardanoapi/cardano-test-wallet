@@ -36,14 +36,14 @@ describe("Signature verification", () => {
     expect(isVerified).toBeTruthy();
   });
 
-  test("Should verify signData", async () => {
+  test("Should verify cip95 signData", async () => {
     const wallet = await mkCip95Wallet(await ShelleyWallet.generate(), {
       networkId: 1,
     });
     const payloadHex = Buffer.from("Hello").toString("hex");
     const changeAddr = await wallet.getChangeAddress();
 
-    const signedData = await wallet.signData(changeAddr, payloadHex);
+    const signedData = await wallet.cip95.signData(changeAddr, payloadHex);
 
     // Api logic
     const decoded = COSESign1.from_bytes(
