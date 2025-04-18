@@ -33,7 +33,10 @@ export interface Cip95Instance extends CIP30Instance {
     getPubDRepKey: () => Promise<HexString>;
     getUnregisteredPubStakeKeys: () => Promise<HexString[]>;
     getRegisteredPubStakeKeys: () => Promise<HexString[]>;
-    signData: (address: HexString, payload: HexString) => Promise<DataSignature>;
+    signData: (
+      address: HexString,
+      payload: HexString
+    ) => Promise<DataSignature>;
   };
   getActivePubStakeKeys: () => Promise<HexString[]>;
   getExtensions: () => Record<string, number>[];
@@ -46,6 +49,11 @@ export type CardanoTestWalletJson = {
     pkh: string;
   };
   stake: {
+    private: string;
+    public: string;
+    pkh: string;
+  };
+  dRep: {
     private: string;
     public: string;
     pkh: string;

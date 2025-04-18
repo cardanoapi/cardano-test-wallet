@@ -68,6 +68,7 @@ export async function mkCip95Wallet(
     wallet.rewardAddressRawBytes(networkId)
   ).toString("hex");
   const stakePublicKey = Buffer.from(wallet.stakeKey.public).toString("hex");
+  const dRepPublicKey = Buffer.from(wallet.dRepKey.public).toString("hex");
   const walletInstance: Cip95Instance & {
     experimental: Record<string, CallableFunction>;
     address: string;
@@ -104,7 +105,7 @@ export async function mkCip95Wallet(
       },
     },
     cip95: {
-      getPubDRepKey: async () => stakePublicKey,
+      getPubDRepKey: async () => dRepPublicKey,
       getUnregisteredPubStakeKeys: async () => [stakePublicKey],
       signData: async (address, payload) => signData(wallet, address, payload),
       getRegisteredPubStakeKeys: async () => [
