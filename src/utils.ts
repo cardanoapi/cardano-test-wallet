@@ -17,7 +17,12 @@ export async function signData(
   address: string,
   payload: string
 ) {
-  const accountKey = wallet.stakeKey;
+  let providedAddress = address;
+  if (address.length === 58) {
+    providedAddress = address.substring(2, 58);
+  }
+  const isRegisteredDRep = wallet.dRepKey.json().pkh === providedAddress;
+  const accountKey = isRegisteredDRep ? wallet.dRepKey : wallet.stakeKey;
 
   const protectedHeaders = new SignatureBuilder.HeaderMap();
   protectedHeaders.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
@@ -44,7 +49,12 @@ export async function signData(
   const key = new SignatureBuilder.COSEKey(KeyType.OKP);
   key.setAlgorithmId(SignatureBuilder.AlgorithmId.EDSA);
   key.setHeader(-1, 6);
-  key.setHeader(-2, Buffer.from(wallet.stakeKey.public));
+  key.setHeader(
+    -2,
+    Buffer.from(
+      isRegisteredDRep ? wallet.dRepKey.public : wallet.stakeKey.public
+    )
+  );
 
   return {
     signature: Buffer.from(coseSign1.toBytes()).toString("hex"),
