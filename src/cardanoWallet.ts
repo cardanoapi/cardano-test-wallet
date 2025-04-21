@@ -143,6 +143,11 @@ export async function mkCip95Wallet(
       const witness = new Map();
       const vkeyWitnesses = [[wallet.paymentKey.public, paymentKeySig]];
 
+      if (config?.enableDRepSigning ?? false) {
+        console.debug("Signing dRep key...");
+        const dRepKeySig = await wallet.dRepKey.signRaw(txHash);
+        vkeyWitnesses.push([wallet.dRepKey.public, dRepKeySig]);
+      }
       if (config?.enableStakeSigning ?? false) {
         console.debug("Signing stake key...");
         const stakeKeySig = await wallet.stakeKey.signRaw(txHash);

@@ -70,6 +70,7 @@ export type CardanoTestWallet = {
 export type CardanoTestWalletConfig = {
   networkId?: number;
   enableStakeSigning?: boolean;
+  enableDRepSigning?: boolean;
   extraRegisteredPubStakeKeys?: string[];
   extraRewardAddresses?: string[];
   kuberApiUrl?: string;
