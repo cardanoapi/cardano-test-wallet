@@ -12,6 +12,12 @@ export function serializeData(data: any) {
   return cborxEncoder.encode(data);
 }
 
+export function encodeBalance(num: number) {
+  let hex = num.toString(16);
+  let paddedHex = hex.padStart(16, "0");
+  return "1b" + paddedHex;
+}
+
 export async function signData(
   wallet: ShelleyWallet,
   address: string,

@@ -11,7 +11,7 @@ import {
 } from "../types";
 import { ShelleyWallet } from "./crypto";
 import kuberService from "./kuberService";
-import { signData } from "./utils";
+import { encodeBalance, signData } from "./utils";
 
 const cborxEncoder = new Encoder({
   mapsAsObjects: false,
@@ -75,7 +75,13 @@ export async function mkCip95Wallet(
   } = {
     address: walletAddressHex,
     getBalance: async () => {
-      return "0";
+      const utxos = await kuberService.queryUtxos(walletAddress);
+      const balanceInLovelace = utxos.reduce(
+        (acc, utxo) => acc + Number(utxo.value.lovelace),
+        0
+      );
+
+      return encodeBalance(balanceInLovelace);
     },
 
     submitTx: async (tx) => {
@@ -187,6 +193,11 @@ export async function mkCardanoWalletExtension(
       enabled = true;
       const cardanoTestWallet: CardanoTestWallet | undefined =
         window["cardanoTestWallet"];
+      console.log(
+        "[CardanoTestWallet] Enabling wallet extension",
+        cardanoTestWallet,
+        cardanoTestWallet.wallet
+      );
       const walletJson =
         cardanoTestWallet?.wallet || (await ShelleyWallet.generate()).json();
 
